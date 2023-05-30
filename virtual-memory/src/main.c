@@ -6,20 +6,17 @@
 
 int main(int argc, char** argv){
 
-  List* acess_list = read_entry("entrada.in");
-  Table
-  
-  
-  list_free(acess_list);
-  return 0;
-}
+  Stats stats = init_config(argc, argv);
 
-/*
-  PRINT LIST
+  List* acess_list = read_entry(stats.config.fpath);
   Node* node_curr = acess_list->head->next;
   while(node_curr != NULL){
     printf("%x %c\n", ((Acess*)node_curr->data)->addr,((Acess*)node_curr->data)->rw);
     node_curr = node_curr->next;
   }
+  list_free(acess_list);
   
-*/
+  print_stats(stats);
+  return 0;
+}
+

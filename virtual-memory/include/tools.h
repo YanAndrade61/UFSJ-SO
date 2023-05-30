@@ -11,6 +11,7 @@ typedef struct config{
   unsigned mem_sz;
   char *fpath;
   char *pol_subst;
+  int debug;
 
 } Config;
 
@@ -21,8 +22,19 @@ typedef struct acess{
 
 }Acess;
 
+typedef struct stats{
+
+  Config config;
+  unsigned pages_read;
+  unsigned written_pages;
+  unsigned page_faults;
+  unsigned dirty_pages;
+
+} Stats;      
 
 List* read_entry(char* fpath);
+Stats init_config(int argc, char** argv);
+void print_stats(Stats stats);
 
 
 #endif

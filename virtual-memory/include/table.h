@@ -3,6 +3,7 @@
 
 #include<stdio.h>
 #include"list.h"
+#include"tools.h"
 
 typedef struct frame{
 
