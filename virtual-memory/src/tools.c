@@ -60,19 +60,18 @@ void run_memory(List* acess_list, Stats* stats){
   // printf("ok\n");
   Node* node = acess_list->head->next;
   Acess* acess = NULL;
-  Table* table = table_init(stats);
+  Table* table = table_init(stats->config.mem_sz, stats->config.page_sz);
   Frame* aux = NULL;
   int time = 0;
 
   for(;node != NULL; node = node->next){
     acess = (Acess*)(node->data);
-    
-    if(acess->rw == 'w') stats->written_pages++;
+    if(acess->rw == 'W') stats->written_pages++;
     else stats->pages_read++;
 
     aux = table_find(table,acess->addr);
     if(aux != NULL){
-      if(acess->rw == 'w')aux->isModified = 1; 
+      if(acess->rw == 'W')aux->isModified = 1; 
       aux->lastAcess = time;
       aux->isReference = 1;
       aux->isPresent = 1;
@@ -97,4 +96,74 @@ void run_memory(List* acess_list, Stats* stats){
     
     time++;  
   }
+}
+
+void lru(Table* table, unsigned addr, unsigned mode, unsigned time, Stats* stats){
+
+  Frame* subst = NULL;
+  unsigned min = INT_MAX;
+  Node* node = NULL;
+
+  //Find the page that was last used
+  for(int i = 0; i < table->sz; i++){
+    node = table->tb[i]->head->next;
+    for(;node != NULL; node = node->next){
+      Frame* atual = (Frame*)(node->data);
+      if(atual->isPresent)continue;
+      
+      if(atual->lastAcess < min){
+        subst = atual;
+        min = subst->lastAcess;
+      }
+    }
+  }
+
+  //Subst the page last used
+  subst->isPresent = 0;
+  table_push(table,addr,mode,time);
+  if(subst->isModified == 'W')stats->dirty_pages++;
+  
+}
+
+void nru(Table* table, unsigned addr, unsigned mode, unsigned time, Stats* stats){
+
+  Frame* subst = NULL;
+  Node* node = NULL;
+  int _class = 3;
+  //Find the page that was not recently used based on 4 classes
+  for(int i = 0; i < table->sz; i++){
+    node = table->tb[i]->head->next;
+    for(;node != NULL; node = node->next){
+      Frame* atual = (Frame*)(node->data);
+      if(atual->isPresent)continue;
+      
+      if(!atual->isReference && !atual->isModified){
+        subst = (Frame*)(node->data);
+        _class = 0;
+      }
+      if(_class > 1 &&
+         !atual->isReference && atual->isModified){
+        subst = (Frame*)(node->data);
+        _class = 1;
+      }
+      if(_class > 2 &&
+         atual->isReference && !atual->isModified){
+        subst = (Frame*)(node->data);
+        _class = 2;
+      }
+      if(_class > 3 &&
+         atual->isReference && atual->isModified){
+        subst = (Frame*)(node->data);
+        _class = 3;
+      }
+    }
+    //We find a page in min class
+    if(_class == 0)break;
+  }
+
+  //Subst the page last used
+  subst->isPresent = 0;
+  if(subst->isModified == 'W')stats->dirty_pages++;
+  table_push(table,addr,mode,time);
+  
 }

@@ -4,8 +4,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <limits.h>
 #include "table.h"
-#include "list.h"
+// #include "list.h"
+
 
 typedef struct config{
 
@@ -31,15 +33,17 @@ typedef struct stats{
   unsigned written_pages;
   unsigned page_faults;
   unsigned dirty_pages;
-  unsigned inMemory;
+  int inMemory;
 
-}Stats;    
+}Stats;
 
 
+
+void print_stats(Stats stats);
 List* read_entry(char* fpath);
 Stats init_config(int argc, char** argv);
-void print_stats(Stats stats);
 void run_memory(List* acess_list, Stats* stats);
-
+void lru(Table* table, unsigned addr, unsigned mode, unsigned time, Stats* stats);
+void nru(Table* table, unsigned addr, unsigned mode, unsigned time, Stats* stats);
 
 #endif

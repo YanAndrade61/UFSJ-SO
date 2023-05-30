@@ -1,7 +1,7 @@
 #include "table.h"
 
-int get_desl(Stats stats){
-  unsigned tmp = stats.config.page_sz*1024;
+int get_desl(int page_sz){
+  unsigned tmp = page_sz*1024;
   unsigned s = 0;
   while (tmp>1) {
     tmp = tmp>>1;
@@ -10,22 +10,19 @@ int get_desl(Stats stats){
   return s;
 }
 
-Table* table_init(Stats stats){
+Table* table_init(int mem_sz, int page_sz){
   
-  int sz = stats.config.mem_sz/stats.config.page_sz;
+  int sz = mem_sz/page_sz;
   Table* table = (Table*)calloc(1,sizeof(Table));
   table->tb = (List**)calloc(sz,sizeof(List*));
-  printf("ok\n");
   
   for(int i = 0; i < sz; i++){
-    printf("ok\n");
     table->tb[i] = list_init();
-    printf("ok\n");
   }
 
   
   table->sz = sz;
-  table->desl = get_desl(stats);
+  table->desl = get_desl(page_sz);
   return table;  
 } 
 
