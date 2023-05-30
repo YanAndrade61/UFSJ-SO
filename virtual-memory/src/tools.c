@@ -70,7 +70,9 @@ void run_memory(List* acess_list, Stats* stats){
     else stats->pages_read++;
 
     aux = table_find(table,acess->addr);
+    //Find the page in memory
     if(aux != NULL){
+      printf("i: %x\n", aux->addr);
       if(acess->rw == 'W')aux->isModified = 1; 
       aux->lastAcess = time;
       aux->isReference = 1;
@@ -78,12 +80,14 @@ void run_memory(List* acess_list, Stats* stats){
       continue;
     }
     stats->page_faults++;
+    //Theres available space in memory
     if(stats->inMemory < table->sz){
       table_push(table,acess->addr,acess->rw,time);
       stats->inMemory++;
       continue;
     }
 
+    //Apply one of the strategy
     if(strcmp(stats->config.pol_subst, "lru") == 0){
         lru(table, acess->addr, acess->rw, time, stats);
     }

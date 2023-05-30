@@ -45,12 +45,13 @@ Frame* table_find(Table* table, unsigned addr){
   Frame* aux = NULL;
   
   for(;node != NULL; node = node->next){
-    Frame* aux = (Frame*)node->data;
+    aux = (Frame*)node->data;
     if(aux->addr == addr){
+      printf("t: %x\n",aux->addr);
       break;
     }
   }
-
+  
   return aux;
 }
 
