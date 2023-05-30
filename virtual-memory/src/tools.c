@@ -96,6 +96,8 @@ void run_memory(List* acess_list, Stats* stats){
     
     time++;  
   }
+
+  table_free(table);
 }
 
 void lru(Table* table, unsigned addr, unsigned mode, unsigned time, Stats* stats){

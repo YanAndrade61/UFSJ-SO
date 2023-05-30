@@ -67,3 +67,11 @@ Frame frame_init(unsigned addr, char rw, int time){
   return f;
 }
 
+void table_free(Table* table){
+  
+  // for(int i = 0; i < table->sz; i++){
+  //   list_free(table->tb[i]);
+  // }
+  free(table->tb);
+  free(table);
+}

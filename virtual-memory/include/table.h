@@ -22,10 +22,12 @@ typedef struct table{
 #endif
 
 
-int get_desl(int page_sz);
-void table_push(Table* tb, unsigned addr, char rw, int time);
 Table* table_init(int mem_sz, int page_sz);
+void table_push(Table* tb, unsigned addr, char rw, int time);
 Frame* table_find(Table* table, unsigned addr);
 unsigned table_hash(Table* table,unsigned addr);
-void table_push(Table* table,unsigned addr, char rw, int time);
+void table_free(Table* table);
+
+int get_desl(int page_sz);
 Frame frame_init(unsigned addr, char rw, int time);
+

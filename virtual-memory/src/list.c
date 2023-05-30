@@ -32,11 +32,13 @@ void* list_pop(List* list) {
  
 void list_free(List* list) {
     Node* node_curr = list->head;
+  
     while (node_curr != NULL) {
         Node* next = node_curr->next;
         free(node_curr->data);
         free(node_curr);
         node_curr = next;
     }
-    free(list);
+    
+    // free(list);
 }
