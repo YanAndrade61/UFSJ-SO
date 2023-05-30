@@ -40,3 +40,11 @@ void list_free(List* list) {
     }
     free(list);
 }
+
+void list_print(List* list){
+    Node* node_curr = list->head->next;
+    // while(node_curr != NULL){
+    //     printf("%x %c\n", node_curr->data)->addr,(node_curr->data)->rw);
+    //     node_curr = node_curr->next;
+    // }
+}
