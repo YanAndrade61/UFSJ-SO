@@ -7,8 +7,9 @@
 typedef struct frame{
 
   unsigned isModified;
-  unsigned lastAcess;
   unsigned isPresent;
+  unsigned isReference;
+  unsigned lastAcess;
   unsigned addr;
 
 }Frame;
