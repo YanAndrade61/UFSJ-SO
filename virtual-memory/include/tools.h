@@ -1,10 +1,11 @@
 #ifndef __TOOLS_H__
 #define __TOOLS_H__
 
-#include<stdio.h>
-#include<stdlib.h>
-#include "list.h"
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include "table.h"
+#include "list.h"
 
 typedef struct config{
 
@@ -32,11 +33,13 @@ typedef struct stats{
   unsigned dirty_pages;
   unsigned inMemory;
 
-} Stats;      
+}Stats;    
+
 
 List* read_entry(char* fpath);
 Stats init_config(int argc, char** argv);
 void print_stats(Stats stats);
+void run_memory(List* acess_list, Stats* stats);
 
 
 #endif

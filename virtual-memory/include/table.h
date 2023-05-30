@@ -1,9 +1,7 @@
 #ifndef __TABLE_H__
 #define __TABLE_H__
 
-#include<stdio.h>
-#include"list.h"
-#include"tools.h"
+#include "include.h"
 
 typedef struct frame{
 
@@ -21,9 +19,10 @@ typedef struct table{
   unsigned sz;
 }Table;
 
-int get_desl(Stats stats);
-void table_push(Table* tb);
+// int get_desl(Stats stats);
+void table_push(Table* tb, unsigned addr, char rw, int time);
 Table* table_init(Stats stats);
+Frame* table_find(Table* table, unsigned addr);
 unsigned table_hash(Table* table,unsigned addr);
 void table_push(Table* table,unsigned addr, char rw, int time);
 Frame frame_init(unsigned addr, char rw, int time);

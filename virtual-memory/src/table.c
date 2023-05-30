@@ -1,7 +1,7 @@
 #include "table.h"
 
 int get_desl(Stats stats){
-  unsigned tmp = stats.page_sz;
+  unsigned tmp = stats.config.page_sz*1024;
   unsigned s = 0;
   while (tmp>1) {
     tmp = tmp>>1;
@@ -12,16 +12,21 @@ int get_desl(Stats stats){
 
 Table* table_init(Stats stats){
   
-  Table* table = (Table*)calloc(stats.mem_sz/stats.page_sz,sizeof(List*));
+  int sz = stats.config.mem_sz/stats.config.page_sz;
+  Table* table = (Table*)calloc(1,sizeof(Table));
+  table->tb = (List**)calloc(sz,sizeof(List*));
+  printf("ok\n");
   
-  for(unsigned i = 0; i < sz; i++){
+  for(int i = 0; i < sz; i++){
+    printf("ok\n");
     table->tb[i] = list_init();
+    printf("ok\n");
   }
 
+  
   table->sz = sz;
   table->desl = get_desl(stats);
-  return table;
-  
+  return table;  
 } 
 
 unsigned table_hash(Table* table,unsigned addr){
@@ -36,6 +41,22 @@ void table_push(Table* table,unsigned addr, char rw, int time){
     
 }
 
+Frame* table_find(Table* table, unsigned addr){
+  
+  unsigned pos = table_hash(table, addr);
+  Node *node = table->tb[pos]->head->next;
+  Frame* aux = NULL;
+  
+  for(;node != NULL; node = node->next){
+    Frame* aux = (Frame*)node->data;
+    if(aux->addr == addr){
+      break;
+    }
+  }
+
+  return aux;
+}
+
 Frame frame_init(unsigned addr, char rw, int time){
   Frame f;
   
@@ -48,3 +69,4 @@ Frame frame_init(unsigned addr, char rw, int time){
 
   return f;
 }
+

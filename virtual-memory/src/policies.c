@@ -1,6 +1,6 @@
 #include "policies.h"
 
-void lru(Table* table, unsigned addr, unsigned mode){
+void lru(Table* table, unsigned addr, unsigned mode, unsigned time, Stats stats){
 
   Frame* subst = NULL;
   unsigned min = INT_MAX;
@@ -22,11 +22,12 @@ void lru(Table* table, unsigned addr, unsigned mode){
 
   //Subst the page last used
   subst->isPresent = 0;
-  table_push(table,addr,mode);
+  table_push(table,addr,mode,time);
+  if(subst->isModified == 'w')stats.dirty_pages++;
   
 }
 
-void nru(Table* table, unsigned addr, unsigned mode){
+void nru(Table* table, unsigned addr, unsigned mode, unsigned time, Stats stats){
 
   Frame* subst = NULL;
   Node* node = NULL;
@@ -64,6 +65,7 @@ void nru(Table* table, unsigned addr, unsigned mode){
 
   //Subst the page last used
   subst->isPresent = 0;
-  table_push(table,addr,mode);
+  if(subst->isModified == 'w')stats->dirty_pages++;
+  table_push(table,addr,mode,time);
   
 }

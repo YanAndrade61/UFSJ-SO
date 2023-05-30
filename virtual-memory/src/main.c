@@ -1,8 +1,6 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include"list.h"
-#include "table.h"
+// #include "include.h"
 #include "tools.h"
+#include "list.h"
 
 int main(int argc, char** argv){
 
@@ -10,7 +8,7 @@ int main(int argc, char** argv){
 
   List* acess_list = read_entry(stats.config.fpath);
 
-  run_memory(acess_list,stats);
+  run_memory(acess_list,&stats);
   list_free(acess_list);
   
   print_stats(stats);

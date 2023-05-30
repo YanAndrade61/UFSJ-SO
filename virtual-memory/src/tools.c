@@ -55,16 +55,46 @@ void print_stats(Stats stats){
   printf("\tPage faults: %d\n", stats.page_faults);
 }
 
-void run_memory(List* acess_list, Stats stats){
+void run_memory(List* acess_list, Stats* stats){
 
+  // printf("ok\n");
   Node* node = acess_list->head->next;
   Acess* acess = NULL;
-  Table* table = table_init();
+  Table* table = table_init(stats);
+  Frame* aux = NULL;
   int time = 0;
-  
+
   for(;node != NULL; node = node->next){
     acess = (Acess*)(node->data);
-    table_push(table,acess->addr,acess->rw,time);
+    
+    if(acess->rw == 'w') stats->written_pages++;
+    else stats->pages_read++;
+
+    aux = table_find(table,acess->addr);
+    if(aux != NULL){
+      if(acess->rw == 'w')aux->isModified = 1; 
+      aux->lastAcess = time;
+      aux->isReference = 1;
+      aux->isPresent = 1;
+      continue;
+    }
+    stats->page_faults++;
+    if(stats->inMemory < table->sz){
+      table_push(table,acess->addr,acess->rw,time);
+      stats->inMemory++;
+      continue;
+    }
+
+    if(strcmp(stats->config.pol_subst, "lru") == 0){
+        lru(table, acess->addr, acess->rw, time, stats);
+    }
+    if(strcmp(stats->config.pol_subst, "nru") == 0){
+        nru(table, acess->addr, acess->rw, time, stats);
+    }
+    if(strcmp(stats->config.pol_subst, "second") == 0){
+      // second(table, acess->addr, acess->rw, time, stats);        
+    }
+    
     time++;  
   }
 }
