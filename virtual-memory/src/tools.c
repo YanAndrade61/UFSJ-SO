@@ -1,5 +1,27 @@
 #include "tools.h"
 
+Stats init_config(int argc, char** argv){
+  if(argc < 5 || argc > 6){ 
+    printf("Numero de argumentos incompativel com o exigido pelo programa");
+    exit(1);
+  }
+
+  Stats stats;
+  stats.config.pol_subst = argv[1];
+  stats.config.fpath = argv[2];
+  stats.config.page_sz = atoi(argv[3]);
+  stats.config.mem_sz = atoi(argv[4]);
+  if(argc == 6) stats.config.debug = atoi(argv[5]);
+  else stats.config.debug = 0;
+  stats.pages_read = 0;
+  stats.written_pages = 0;
+  stats.dirty_pages = 0;
+  stats.page_faults = 0;
+  stats.inMemory = 0;
+
+  return stats;
+}
+
 List* read_entry(char* fpath){
 
   FILE* fp = fopen(fpath,"r");
@@ -30,26 +52,19 @@ void print_stats(Stats stats){
   printf("\tPaginas lidas: %d\n", stats.pages_read);
   printf("\tPaginas escritas: %d\n", stats.written_pages);
   printf("\tPaginas sujas: %d\n", stats.dirty_pages);
-  printf("\tPage falts: %d\n", stats.page_faults);
+  printf("\tPage faults: %d\n", stats.page_faults);
 }
 
-Stats init_config(int argc, char** argv){
-  if(argc < 5 || argc > 6){ 
-    printf("Numero de argumentos incompativel com o exigido pelo programa");
-    exit(1);
+void run_memory(List* acess_list, Stats stats){
+
+  Node* node = acess_list->head->next;
+  Acess* acess = NULL;
+  Table* table = table_init();
+  int time = 0;
+  
+  for(;node != NULL; node = node->next){
+    acess = (Acess*)(node->data);
+    table_push(table,acess->addr,acess->rw,time);
+    time++;  
   }
-
-  Stats stats;
-  stats.config.pol_subst = argv[1];
-  stats.config.fpath = argv[2];
-  stats.config.page_sz = atoi(argv[3]);
-  stats.config.mem_sz = atoi(argv[4]);
-  if(argc == 6) stats.config.debug = atoi(argv[5]);
-  else stats.config.debug = 0;
-  stats.pages_read = 0;
-  stats.written_pages = 0;
-  stats.dirty_pages = 0;
-  stats.page_faults = 0;
-
-  return stats;
 }

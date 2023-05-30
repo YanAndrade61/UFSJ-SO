@@ -4,6 +4,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include "list.h"
+#include "table.h"
 
 typedef struct config{
 
@@ -29,6 +30,7 @@ typedef struct stats{
   unsigned written_pages;
   unsigned page_faults;
   unsigned dirty_pages;
+  unsigned inMemory;
 
 } Stats;      
 

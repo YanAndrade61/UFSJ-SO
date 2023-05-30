@@ -1,3 +1,4 @@
+#include "policies.h"
 
 void lru(Table* table, unsigned addr, unsigned mode){
 
@@ -9,10 +10,11 @@ void lru(Table* table, unsigned addr, unsigned mode){
   for(int i = 0; i < table->sz; i++){
     node = table->tb[i]->head->next;
     for(;node != NULL; node = node->next){
-      if((Frame*)(node->data)->isPresent)continue;
+      Frame* atual = (Frame*)(node->data);
+      if(atual->isPresent)continue;
       
-      if((Frame*)(node->data)->lastAcess < min){
-        subst = (Frame*)(node->data);
+      if(atual->lastAcess < min){
+        subst = atual;
         min = subst->lastAcess;
       }
     }
@@ -28,7 +30,7 @@ void nru(Table* table, unsigned addr, unsigned mode){
 
   Frame* subst = NULL;
   Node* node = NULL;
-  int _class;
+  int _class = 3;
   //Find the page that was not recently used based on 4 classes
   for(int i = 0; i < table->sz; i++){
     node = table->tb[i]->head->next;
@@ -40,15 +42,18 @@ void nru(Table* table, unsigned addr, unsigned mode){
         subst = (Frame*)(node->data);
         _class = 0;
       }
-      if(!atual->isReference && atual->isModified){
+      if(_class > 1 &&
+         !atual->isReference && atual->isModified){
         subst = (Frame*)(node->data);
         _class = 1;
       }
-      if(atual->isReference && !atual->isModified){
+      if(_class > 2 &&
+         atual->isReference && !atual->isModified){
         subst = (Frame*)(node->data);
         _class = 2;
       }
-      if(atual->isReference && atual->isModified){
+      if(_class > 3 &&
+         atual->isReference && atual->isModified){
         subst = (Frame*)(node->data);
         _class = 3;
       }
