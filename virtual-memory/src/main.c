@@ -7,7 +7,6 @@
 int main(int argc, char** argv){
 
   Stats stats = init_config(argc, argv);
-  print_stats(stats);
 
   List* acess_list = read_entry(stats.config.fpath);
   Node* node_curr = acess_list->head->next;
@@ -16,6 +15,8 @@ int main(int argc, char** argv){
     node_curr = node_curr->next;
   }
   list_free(acess_list);
+  
+  print_stats(stats);
   return 0;
 }
 
