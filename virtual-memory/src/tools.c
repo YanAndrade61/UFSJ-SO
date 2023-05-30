@@ -90,7 +90,7 @@ void run_memory(List* acess_list, Stats* stats){
     if(strcmp(stats->config.pol_subst, "nru") == 0){
         nru(table, acess->addr, acess->rw, time, stats);
     }
-    if(strcmp(stats->config.pol_subst, "second") == 0){
+    if(strcmp(stats->config.pol_subst, "second-chance") == 0){
       // second(table, acess->addr, acess->rw, time, stats);        
     }
     
@@ -129,7 +129,8 @@ void nru(Table* table, unsigned addr, unsigned mode, unsigned time, Stats* stats
 
   Frame* subst = NULL;
   Node* node = NULL;
-  int _class = 3;
+  int _class = 4;
+  
   //Find the page that was not recently used based on 4 classes
   for(int i = 0; i < table->sz; i++){
     node = table->tb[i]->head->next;
@@ -156,14 +157,47 @@ void nru(Table* table, unsigned addr, unsigned mode, unsigned time, Stats* stats
         subst = (Frame*)(node->data);
         _class = 3;
       }
+      atual->isReference = 0;
     }
-    //We find a page in min class
-    if(_class == 0)break;
   }
 
   //Subst the page last used
   subst->isPresent = 0;
   if(subst->isModified == 'W')stats->dirty_pages++;
   table_push(table,addr,mode,time);
+  
+}
+
+void second_chance(Table* table, unsigned addr, unsigned mode, unsigned time, Stats* stats){
+
+  Frame* subst = NULL;
+  unsigned min = INT_MAX;
+  Node* node = NULL;
+
+  //Find the page that was last used and is not reference
+  while(1){
+    for(int i = 0; i < table->sz; i++){
+      node = table->tb[i]->head->next;
+      for(;node != NULL; node = node->next){
+        Frame* atual = (Frame*)(node->data);
+        if(atual->isPresent)continue;
+        
+        if(atual->lastAcess < min){
+          subst = atual;
+          min = subst->lastAcess;
+        }
+      }
+    }
+    //Give a second chance 
+    if(subst->isReference == 1){
+      subst->isReference = 0;
+      subst->lastAcess = time;
+    }else break;
+  }
+
+  //Subst the page last used
+  subst->isPresent = 0;
+  table_push(table,addr,mode,time);
+  if(subst->isModified == 'W')stats->dirty_pages++;
   
 }

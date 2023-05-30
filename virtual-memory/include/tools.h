@@ -37,13 +37,12 @@ typedef struct stats{
 
 }Stats;
 
-
-
 void print_stats(Stats stats);
 List* read_entry(char* fpath);
 Stats init_config(int argc, char** argv);
 void run_memory(List* acess_list, Stats* stats);
 void lru(Table* table, unsigned addr, unsigned mode, unsigned time, Stats* stats);
 void nru(Table* table, unsigned addr, unsigned mode, unsigned time, Stats* stats);
+void second_chance(Table* table, unsigned addr, unsigned mode, unsigned time, Stats* stats);
 
 #endif
