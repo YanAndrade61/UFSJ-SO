@@ -35,11 +35,26 @@ void nru(Table* table, unsigned addr, unsigned mode){
     for(;node != NULL; node = node->next){
       Frame* atual = (Frame*)(node->data);
       if(atual->isPresent)continue;
+      
+      if(!atual->isReference && !atual->isModified){
+        subst = (Frame*)(node->data);
+        _class = 0;
+      }
+      if(!atual->isReference && atual->isModified){
+        subst = (Frame*)(node->data);
+        _class = 1;
+      }
+      if(atual->isReference && !atual->isModified){
+        subst = (Frame*)(node->data);
+        _class = 2;
+      }
       if(atual->isReference && atual->isModified){
         subst = (Frame*)(node->data);
-        min = subst->lastAcess;
+        _class = 3;
       }
     }
+    //We find a page in min class
+    if(_class == 0)break;
   }
 
   //Subst the page last used
