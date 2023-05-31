@@ -29,5 +29,5 @@ unsigned table_hash(Table* table,unsigned addr);
 void table_free(Table* table);
 
 int get_desl(int page_sz);
-Frame frame_init(unsigned addr, char rw, int time);
+Frame* frame_init(unsigned addr, char rw, int time);
 

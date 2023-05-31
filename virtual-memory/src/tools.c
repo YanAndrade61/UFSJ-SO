@@ -68,11 +68,10 @@ void run_memory(List* acess_list, Stats* stats){
     acess = (Acess*)(node->data);
     if(acess->rw == 'W') stats->written_pages++;
     else stats->pages_read++;
-
+      
     aux = table_find(table,acess->addr);
     //Find the page in memory
     if(aux != NULL){
-      printf("i: %x\n", aux->addr);
       if(acess->rw == 'W')aux->isModified = 1; 
       aux->lastAcess = time;
       aux->isReference = 1;

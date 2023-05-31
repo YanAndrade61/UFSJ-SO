@@ -31,11 +31,10 @@ unsigned table_hash(Table* table,unsigned addr){
 }
 
 void table_push(Table* table,unsigned addr, char rw, int time){
-  Frame f = frame_init(addr, rw, time);
+  Frame* f = frame_init(addr, rw, time);
   unsigned pos = table_hash(table, addr);
 
-  list_push(table->tb[pos],(void*)&f);
-    
+  list_push(table->tb[pos],(void*)f);
 }
 
 Frame* table_find(Table* table, unsigned addr){
@@ -43,36 +42,37 @@ Frame* table_find(Table* table, unsigned addr){
   unsigned pos = table_hash(table, addr);
   Node *node = table->tb[pos]->head->next;
   Frame* aux = NULL;
+  int find = 0;
   
   for(;node != NULL; node = node->next){
     aux = (Frame*)node->data;
     if(aux->addr == addr){
-      printf("t: %x\n",aux->addr);
+      find = 1;
       break;
     }
   }
-  
+  if(find == 0)aux = NULL;
   return aux;
 }
 
-Frame frame_init(unsigned addr, char rw, int time){
-  Frame f;
+Frame* frame_init(unsigned addr, char rw, int time){
+  Frame* f = (Frame*)calloc(1,sizeof(Frame));
   
-  f.addr = addr;
-  f.isReference = 1;
-  if(rw == 'w')f.isModified = 1;
-  else f.isModified = 0;
-  f.isPresent = 1;
-  f.lastAcess = time;
+  f->addr = addr;
+  f->isReference = 1;
+  if(rw == 'W')f->isModified = 1;
+  else f->isModified = 0;
+  f->isPresent = 1;
+  f->lastAcess = time;
 
   return f;
 }
 
 void table_free(Table* table){
   
-  // for(int i = 0; i < table->sz; i++){
-  //   list_free(table->tb[i]);
-  // }
+  for(int i = 0; i < table->sz; i++){
+    list_free(table->tb[i]);
+  }
   free(table->tb);
   free(table);
 }
