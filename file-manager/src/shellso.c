@@ -1,4 +1,4 @@
-#include "shellso.h"
+#include "main.h"
 
 /*Function to read input and generate an history*/
 int readInput(char* cmd_line){
@@ -23,21 +23,22 @@ int readInput(char* cmd_line){
 }
 
 /*Process the cmd line, separating each command and their args*/
-char **processInput(char *cmd){
+char **parserStr(char *str, char* sep, int* argc){
 
     char **command = (char **)calloc(sizeof(char *), MAX_ARGS);
     char *token;
     int i;
-
+    (*argc) = 0;
     //Get each commands in line separated by pipe
-    token = strtok(cmd, " ");
+    token = strtok(str, sep);
     for (i = 0; token != NULL; i++){
         if (strlen(token) == 0)
             i--;
-        else
+        else{
             command[i] = token;
-
-        token = strtok(NULL, "|");
+            (*argc)++;
+        }
+        token = strtok(NULL, sep);
     }
 
     return command;
@@ -45,18 +46,30 @@ char **processInput(char *cmd){
 
 
 /*Execute builtin commands or return 0 if its not a builtin*/
-int builtinCommands(char **command){
+int builtinCommands(char **argv){
 
-    if(strcmp(command[0],"init") == 0){
+    char** path = NULL;
+    int sz = 0;
+
+    if(strcmp(argv[0],"init") == 0){
         init();
     }
-    else if(strcmp(command[0],"load") == 0){
+    else if(strcmp(argv[0],"load") == 0){
         load();
     }
-    else if(strcmp(command[0],"help") == 0){
+    else if(strcmp(argv[0],"mkdir") == 0){
+        create(argv,1);
+    }
+    else if(strcmp(argv[0],"create") == 0){
+        create(argv,0);
+    }
+    else if(strcmp(argv[0],"ls") == 0){
+        ls(argv);
+    }
+    else if(strcmp(argv[0],"help") == 0){
         help();
     }
-    else if(strcmp(command[0],"quit") == 0){
+    else if(strcmp(argv[0],"quit") == 0){
         printf("See you later!\n");
         exit(0);
     }
@@ -64,6 +77,7 @@ int builtinCommands(char **command){
         printf("\nCommand not find!\nEnter help to see available commands\n");
         return 0;
     }
+    if(path != NULL) free(path);
 
     return 1;
 }
@@ -88,6 +102,7 @@ int shell(){
     char cmd_line[MAX_CMD];
     char** command;
     int read_sig;
+    int argc;
 
     system("clear");
     while (1){
@@ -101,7 +116,7 @@ int shell(){
         if(read_sig == 1)
             continue;
 
-        command = processInput(cmd_line);
+        command = parserStr(cmd_line, " ", &argc);
 
         builtinCommands(command);
  
@@ -109,4 +124,8 @@ int shell(){
     }
 
     return 0;
+}
+
+void erro(int err){
+    fprintf(stderr,"error: %s\n",strerror(err));
 }
