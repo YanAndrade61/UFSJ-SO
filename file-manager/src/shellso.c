@@ -66,6 +66,18 @@ int builtinCommands(char **argv){
     else if(strcmp(argv[0],"ls") == 0){
         ls(argv);
     }
+    else if(strcmp(argv[0],"unlink") == 0){
+        ulink(argv);
+    }
+    else if(strcmp(argv[0],"write") == 0){
+        cwrite(argv);
+    }
+    else if(strcmp(argv[0],"read") == 0){
+        cread(argv);
+    }
+    else if(strcmp(argv[0],"append") == 0){
+        append(argv);
+    }
     else if(strcmp(argv[0],"help") == 0){
         help();
     }

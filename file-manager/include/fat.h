@@ -34,11 +34,13 @@ static data_cluster clusters[4086];
 
 int 		  find_cluster(char **path, int sz);
 int 		  put_entry(int block, data_cluster cluster, dir_entry_t entry);
+int 		  dir_empty(int block);
 void 		  write_fat();
 void 		  write_cluster(int index, data_cluster data);
 data_cluster  read_cluster(int index);
 dir_entry_t   get_entry(data_cluster cluster, char* file);
 dir_entry_t   create_entry(int attr, char* file);
+dir_entry_t   extend_entry(dir_entry_t entry);
 
 
 

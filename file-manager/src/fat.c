@@ -77,6 +77,7 @@ int put_entry(int block, data_cluster cluster, dir_entry_t entry){
         }
     }
     write_cluster(block,cluster);
+    
 
 	return free;
 
@@ -92,4 +93,30 @@ dir_entry_t create_entry(int attr, char* file){
 	fat[entry.first_block] = 0xffff;
 
 	return entry;
+}
+
+dir_entry_t extend_entry(dir_entry_t entry){
+
+	dir_entry_t ex_entry;
+	
+	strncpy((char*)ex_entry.filename,entry.filename,17*sizeof(char));
+	ex_entry.attributes = entry.attributes;
+	ex_entry.first_block = firstAddr();
+	fat[ex_entry.first_block] = 0xffff;
+    fat[entry.first_block] = ex_entry.first_block;
+
+	return ex_entry;
+}
+
+int dir_empty(int block){
+
+    int empty = 1;
+    data_cluster cluster = read_cluster(block);
+    for (int i = 0; i < ENTRY_BY_CLUSTER; i++)
+        if(cluster.dir[i].first_block != 0){
+            empty = 0;
+            break;
+        }
+
+    return empty;
 }
