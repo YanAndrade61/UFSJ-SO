@@ -5,11 +5,11 @@
 #define MAX_ARGS 3
 #define MAX_CMD 1024
 
-int shell();
+int  shell();
 void help();
-int readInput(char* cmd_line);
+int  readInput(char* cmd_line);
 char **parserStr(char *str, char* sep, int* sz);
-int builtinCommands(char **commands);
+int  builtinCommands(char **argv, int argc);
 void erro(int err);
 
 

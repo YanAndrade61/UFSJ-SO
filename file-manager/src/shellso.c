@@ -46,7 +46,7 @@ char **parserStr(char *str, char* sep, int* argc){
 
 
 /*Execute builtin commands or return 0 if its not a builtin*/
-int builtinCommands(char **argv){
+int builtinCommands(char **argv, int argc){
 
     char** path = NULL;
     int sz = 0;
@@ -58,25 +58,25 @@ int builtinCommands(char **argv){
         load();
     }
     else if(strcmp(argv[0],"mkdir") == 0){
-        create(argv,1);
+        create(argv,argc,1);
     }
     else if(strcmp(argv[0],"create") == 0){
-        create(argv,0);
+        create(argv,argc,0);
     }
     else if(strcmp(argv[0],"ls") == 0){
-        ls(argv);
+        ls(argv,argc);
     }
     else if(strcmp(argv[0],"unlink") == 0){
-        ulink(argv);
+        ulink(argv,argc);
     }
     else if(strcmp(argv[0],"write") == 0){
-        cwrite(argv);
+        cwrite(argv,argc);
     }
     else if(strcmp(argv[0],"read") == 0){
-        cread(argv);
+        cread(argv,argc);
     }
     else if(strcmp(argv[0],"append") == 0){
-        append(argv);
+        append(argv,argc);
     }
     else if(strcmp(argv[0],"help") == 0){
         help();
@@ -128,9 +128,10 @@ int shell(){
         if(read_sig == 1)
             continue;
 
+        argc = 0;
         command = parserStr(cmd_line, " ", &argc);
 
-        builtinCommands(command);
+        builtinCommands(command, argc);
  
         free(command);
     }

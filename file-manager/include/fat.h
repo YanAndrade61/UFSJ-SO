@@ -30,7 +30,7 @@ static uint16_t 	fat[NUM_CLUSTER];
 static uint8_t 		boot_block[CLUSTER_SIZE];
 static dir_entry_t 	root_dir[ENTRY_BY_CLUSTER];
 static data_cluster clusters[4086];
-
+static int is_load = 0;
 
 int 		  find_cluster(char **path, int sz);
 int 		  put_entry(int block, data_cluster cluster, dir_entry_t entry);

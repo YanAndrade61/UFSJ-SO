@@ -26,6 +26,8 @@ void init(void) {
 	fwrite(&clusters, sizeof(clusters), 1, ptr_file);
 
 	fclose(ptr_file);
+
+	is_load = 1;
 }
 
 void load() {
@@ -36,10 +38,21 @@ void load() {
 	fread(fat, sizeof(fat), 1, ptr_file);
 	fread(root_dir, sizeof(root_dir), 1, ptr_file);
 	fclose(ptr_file);
+
+	is_load = 1;
 }
 
 /*Create arquive depend on attr (0 = file, 1 = directory)*/
-int create(char** argv, int attr){
+int create(char** argv, int argc, int attr){
+
+	if(!is_load){
+		printf("erro: Load or init memory first\n");
+		return 1;
+	}
+	if(argc != 2){
+		erro(EINVAL);
+		return 1;
+	}
 
 	int sz = 0;
 	char** path = parserStr(argv[1],"/", &sz);
@@ -54,6 +67,12 @@ int create(char** argv, int attr){
 	}
 
 	cluster = read_cluster(block);
+	for (int i = 0; i < ENTRY_BY_CLUSTER; i++)
+		if(strcmp(cluster.dir[i].filename,path[sz-1]) == 0){
+			erro(EEXIST);
+			return 1;
+		}
+
 	entry = create_entry(attr,path[sz-1]);
 	sucess = put_entry(block,cluster,entry);
 	fat[entry.first_block] = 0xffff;
@@ -68,7 +87,16 @@ int create(char** argv, int attr){
 	return sucess;
 }
 
-int ls(char** argv){
+int ls(char** argv, int argc){
+
+	if(!is_load){
+		printf("erro: Load or init memory first\n");
+		return 1;
+	}
+	if(argc > 2){
+		erro(EINVAL);
+		return 1;
+	}
 
 	int sz = 0;
 	char** path = parserStr(argv[1],"/", &sz);
@@ -90,7 +118,16 @@ int ls(char** argv){
 	return 0;
 }
 
-int ulink(char** argv){
+int ulink(char** argv, int argc){
+
+	if(!is_load){
+		printf("erro: Load or init memory first\n");
+		return 1;
+	}
+	if(argc != 2){
+		erro(EINVAL);
+		return 1;
+	}
 
 	int sz = 0;
 	char** path = parserStr(argv[1],"/", &sz);
@@ -127,7 +164,16 @@ int ulink(char** argv){
 	return 0;
 }
 
-int cwrite(char** argv){
+int cwrite(char** argv, int argc){
+
+	if(!is_load){
+		printf("erro: Load or init memory first\n");
+		return 1;
+	}
+	if(argc != 3){
+		erro(EINVAL);
+		return 1;
+	}
 
 	int sz = 0;
 	char** path = parserStr(argv[2],"/", &sz);
@@ -175,7 +221,16 @@ int cwrite(char** argv){
 	return 0;
 }
 
-int append(char** argv){
+int append(char** argv, int argc){
+
+	if(!is_load){
+		printf("erro: Load or init memory first\n");
+		return 1;
+	}
+	if(argc != 3){
+		erro(EINVAL);
+		return 1;
+	}
 
 	int sz = 0;
 	char** path = parserStr(argv[2],"/", &sz);
@@ -228,7 +283,16 @@ int append(char** argv){
 	return 0;
 }
 
-int cread(char** argv){
+int cread(char** argv, int argc){
+
+	if(!is_load){
+		printf("erro: Load or init memory first\n");
+		return 1;
+	}
+	if(argc != 2){
+		erro(EINVAL);
+		return 1;
+	}
 
 	int sz = 0;
 	char** path = parserStr(argv[1],"/", &sz);
@@ -258,7 +322,9 @@ int cread(char** argv){
 		printf("%s",cluster.data);
 		index = fat[index]; 
 	}while(index != 0xffff);
+
 	printf("\n");
+
 	return 0;
 }
 
