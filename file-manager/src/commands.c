@@ -74,6 +74,7 @@ int create(char** argv, int argc, int attr){
 		}
 
 	entry = create_entry(attr,path[sz-1]);
+	if(attr == 1) entry.size = CLUSTER_SIZE;
 	sucess = put_entry(block,cluster,entry);
 	fat[entry.first_block] = 0xffff;
 
@@ -110,10 +111,12 @@ int ls(char** argv, int argc){
 		return 1;
 	}
 
+	printf("%30s\n","size (Bytes)");
+
 	cluster = read_cluster(block);
 	for (int i = 0; i < ENTRY_BY_CLUSTER; i++)
 		if(cluster.dir[i].first_block != 0)
-			printf("%s\n",cluster.dir[i].filename);
+			printf("%-17s %d\n",cluster.dir[i].filename, cluster.dir[i].size);
 
 	return 0;
 }
@@ -197,8 +200,12 @@ int cwrite(char** argv, int argc){
 				return 1;
 			}			
 			entry = cluster.dir[i];
+			cluster.dir[i].size = strlen(string)*8;
 			break;
 		}
+	
+	write_cluster(block,cluster);
+
 
 	block = entry.first_block;
 	cluster = read_cluster(block);
@@ -254,8 +261,11 @@ int append(char** argv, int argc){
 				return 1;
 			}
 			entry = cluster.dir[i];
+			cluster.dir[i].size += strlen(string)*8;
 			break;
 		}
+
+	write_cluster(block,cluster);
 	
 	block = entry.first_block;
 	cluster = read_cluster(block);
